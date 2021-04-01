@@ -30,8 +30,6 @@ public class PlayerController : MonoBehaviour
         {
             DestroySticksAndMove();
         }
-
-
     }
 
     private void DestroySticksAndMove()

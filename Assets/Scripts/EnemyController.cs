@@ -20,7 +20,6 @@ public class EnemyController : MonoBehaviour
         {
             HandleMovement();
         }
-        
     }
 
     private void HandleMovement()
@@ -46,5 +45,4 @@ public class EnemyController : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    
 }

@@ -38,14 +38,8 @@ public class FriendController : MonoBehaviour
     {
         if (PlayerController.Instance != null)
         {
-            if (!PlayerController.Instance.isGettingChased)
-            {
-                HandleMovement();
-            }
-            else
-            {
-                HandleAttack();
-            }
+            HandleMovement();
+            HandleAttack();
         }
         else
         {
@@ -63,7 +57,7 @@ public class FriendController : MonoBehaviour
     {
         float friendToPlayerDistance = Vector3.Distance(transform.position, PlayerController.Instance.transform.position);
 
-        if (friendToPlayerDistance < radiusToRescued && !m_targetIsEnemy)
+        if (friendToPlayerDistance < radiusToRescued)
         {
             if (rescuedIteration == 0)
             {
@@ -109,11 +103,6 @@ public class FriendController : MonoBehaviour
         {
             m_targetIsEnemy = true;
             m_target = colliders[0].gameObject.transform.position;
-        }
-        else
-        {
-            m_navMeshAgent.isStopped = false;
-            m_target = PlayerController.Instance.transform.position;
         }
     }
 

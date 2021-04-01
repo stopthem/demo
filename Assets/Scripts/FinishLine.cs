@@ -5,7 +5,7 @@ using UnityEngine;
 public class FinishLine : MonoBehaviour
 {
     public static FinishLine Instance;
-    
+
     [HideInInspector] public bool playerPassed;
 
     [HideInInspector] public float howManyPassed;
