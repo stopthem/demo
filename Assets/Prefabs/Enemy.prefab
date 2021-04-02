@@ -149,4 +149,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08d5a4ec2a39e2648b941d9575c48b9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rangeToChase: 10
+  rangeToChase: 7

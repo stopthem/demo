@@ -151,8 +151,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   radiusToRescued: 5
-  radiusToAttack: 5
+  radiusToAttack: 6
   stoppingRange: 3
+  rangeToDeAggro: 8
   enemyLayer:
     serializedVersion: 2
     m_Bits: 512

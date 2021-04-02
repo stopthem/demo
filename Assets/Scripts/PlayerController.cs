@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour
 
     public float stickRaycastRadius;
 
-    [HideInInspector] public bool isGettingChased;
+    public bool isGettingChased;
 
     private NavMeshAgent navMeshAgent;
 

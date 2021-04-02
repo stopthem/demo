@@ -10,6 +10,8 @@ public class FriendController : MonoBehaviour
     [SerializeField] private float radiusToRescued;
     [SerializeField] private float radiusToAttack;
     [SerializeField] private float stoppingRange;
+    [SerializeField] private float rangeToDeAggro;
+    private float friendToPlayerDistance;
     private float rescuedIteration;
 
     private Vector3 m_target;
@@ -38,8 +40,20 @@ public class FriendController : MonoBehaviour
     {
         if (PlayerController.Instance != null)
         {
-            HandleMovement();
-            HandleAttack();
+            friendToPlayerDistance = Vector3.Distance(transform.position, PlayerController.Instance.transform.position);
+
+            if (!PlayerController.Instance.isGettingChased)
+            {
+                HandleMovement();
+            }
+            else if (friendToPlayerDistance > rangeToDeAggro)
+            {
+                HandleMovement();
+            }
+            else
+            {
+                HandleAttack();
+            }
         }
         else
         {
@@ -49,13 +63,17 @@ public class FriendController : MonoBehaviour
 
         if (m_navMeshAgent.isStopped == false && m_IsRescued)
         {
+            if (Vector3.Distance(transform.position, m_target) < 0.1f)
+            {
+                m_target = PlayerController.Instance.transform.position;
+            }
             m_navMeshAgent.destination = m_target;
         }
     }
 
     private void HandleMovement()
     {
-        float friendToPlayerDistance = Vector3.Distance(transform.position, PlayerController.Instance.transform.position);
+
 
         if (friendToPlayerDistance < radiusToRescued)
         {
@@ -101,8 +119,13 @@ public class FriendController : MonoBehaviour
         Collider[] colliders = Physics.OverlapSphere(transform.position, radiusToAttack, enemyLayer);
         if (colliders.Length >= 1)
         {
+            m_navMeshAgent.isStopped = false;
             m_targetIsEnemy = true;
             m_target = colliders[0].gameObject.transform.position;
+        }
+        else
+        {
+            HandleMovement();
         }
     }
 
