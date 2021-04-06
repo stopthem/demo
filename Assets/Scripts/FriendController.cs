@@ -13,7 +13,7 @@ public class FriendController : MonoBehaviour
     private float friendToPlayerDistance;
     private float defaultStoppingDistance;
     private float finishLineIteration;
-    
+
     private Vector3 m_target;
 
     private List<GameObject> chaseTargets = new List<GameObject>();
@@ -136,7 +136,12 @@ public class FriendController : MonoBehaviour
             if (m_imChasingEnemy)
             {
                 m_navMeshAgent.stoppingDistance = 0;
-                m_target = chaseTargets[0].transform.position;
+
+                if (chaseTargets.Count == 1)
+                {
+                    m_target = chaseTargets[0].transform.position;
+                }
+
             }
 
         }
