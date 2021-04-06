@@ -143,7 +143,6 @@ public class FriendController : MonoBehaviour
                 }
 
             }
-
         }
         else
         {
