@@ -9,6 +9,9 @@ public class EnemyController : MonoBehaviour
 
     [SerializeField] private float rangeToChase;
 
+    [HideInInspector] public bool friendChasingMe;
+    private bool m_imChasingPlayer;
+
     private void Awake()
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
@@ -29,11 +32,12 @@ public class EnemyController : MonoBehaviour
         {
             navMeshAgent.isStopped = false;
             PlayerController.Instance.isGettingChased = true;
-            navMeshAgent.destination = PlayerController.Instance.transform.position;
+            m_imChasingPlayer = true;
         }
-        else
+
+        if (m_imChasingPlayer)
         {
-            navMeshAgent.isStopped = true;
+            navMeshAgent.destination = PlayerController.Instance.transform.position;
         }
     }
 

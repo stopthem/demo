@@ -9,16 +9,15 @@ public class FriendController : MonoBehaviour
 
     [SerializeField] private float radiusToRescued;
     [SerializeField] private float radiusToAttack;
-    [SerializeField] private float stoppingRange;
     [SerializeField] private float rangeToDeAggro;
     private float friendToPlayerDistance;
-    private float rescuedIteration;
+    private float defaultStoppingDistance;
+    private float chaseIteration;
 
     private Vector3 m_target;
 
-    private bool m_targetIsPlayer;
-    private bool m_targetIsEnemy;
     private bool m_IsRescued;
+    private bool m_imChasingEnemy;
 
     private Renderer m_friendRenderer;
     private Color m_startColor;
@@ -33,6 +32,7 @@ public class FriendController : MonoBehaviour
 
     private void Start()
     {
+        defaultStoppingDistance = m_navMeshAgent.stoppingDistance;
         m_startColor = m_friendRenderer.material.color;
     }
 
@@ -42,15 +42,15 @@ public class FriendController : MonoBehaviour
         {
             friendToPlayerDistance = Vector3.Distance(transform.position, PlayerController.Instance.transform.position);
 
-            if (!PlayerController.Instance.isGettingChased)
+            if (!PlayerController.Instance.isGettingChased && !m_imChasingEnemy)
             {
-                HandleMovement();
+                HandlePlayerFollow();
             }
-            else if (friendToPlayerDistance > rangeToDeAggro)
+            else if (friendToPlayerDistance > rangeToDeAggro && m_IsRescued)
             {
-                HandleMovement();
+                HandleDeAggro();
             }
-            else
+            else if (m_IsRescued)
             {
                 HandleAttack();
             }
@@ -63,69 +63,75 @@ public class FriendController : MonoBehaviour
 
         if (m_navMeshAgent.isStopped == false && m_IsRescued)
         {
-            if (Vector3.Distance(transform.position, m_target) < 0.1f)
-            {
-                m_target = PlayerController.Instance.transform.position;
-            }
             m_navMeshAgent.destination = m_target;
         }
+
     }
 
-    private void HandleMovement()
+    private void HandlePlayerFollow()
     {
-
-
-        if (friendToPlayerDistance < radiusToRescued)
+        if (friendToPlayerDistance < radiusToRescued && !m_IsRescued)
         {
-            if (rescuedIteration == 0)
-            {
-                GameManager.Instance.rescuedFriends++;
-                rescuedIteration++;
-            }
-
-            m_friendRenderer.material.color = Color.green;
-
-            m_navMeshAgent.isStopped = false;
+            GameManager.Instance.rescuedFriends++;
 
             m_IsRescued = true;
 
-            m_targetIsPlayer = true;
-
-            m_target = PlayerController.Instance.transform.position;
-        }
-        else if (m_IsRescued)
-        {
-            m_target = PlayerController.Instance.transform.position;
-        }
-        else if (!m_targetIsEnemy)
-        {
-            m_friendRenderer.material.color = m_startColor;
-
-            m_navMeshAgent.isStopped = true;
+            m_friendRenderer.material.color = Color.green;
         }
 
-        if (Vector3.Distance(transform.position, PlayerController.Instance.transform.position) < stoppingRange && m_targetIsPlayer)
+        if (m_IsRescued)
         {
-            m_navMeshAgent.isStopped = true;
-        }
-        else if (m_IsRescued)
-        {
+            m_navMeshAgent.stoppingDistance = defaultStoppingDistance;
+
             m_navMeshAgent.isStopped = false;
+
+            m_target = PlayerController.Instance.transform.position;
         }
+    }
+
+    private void HandleDeAggro()
+    {
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+
+        for (int i = 0; i < enemies.Length; i++)
+        {
+            enemies[0].GetComponent<EnemyController>().friendChasingMe = false;
+        }
+
+        chaseIteration = 0;
+
+        HandlePlayerFollow();
     }
 
     private void HandleAttack()
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, radiusToAttack, enemyLayer);
+
         if (colliders.Length >= 1)
         {
-            m_navMeshAgent.isStopped = false;
-            m_targetIsEnemy = true;
-            m_target = colliders[0].gameObject.transform.position;
+            EnemyController enemyController = colliders[0].GetComponent<EnemyController>();
+
+            if (!enemyController.friendChasingMe && chaseIteration == 0 && !m_imChasingEnemy)
+            {
+                enemyController.friendChasingMe = true;
+
+                chaseIteration++;
+
+                m_navMeshAgent.isStopped = false;
+
+                m_imChasingEnemy = true;
+            }
+
+            if (m_imChasingEnemy)
+            {
+                m_navMeshAgent.stoppingDistance = 0;
+                m_target = colliders[0].gameObject.transform.position;
+            }
+
         }
         else
         {
-            HandleMovement();
+            HandlePlayerFollow();
         }
     }
 

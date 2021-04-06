@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2628000852499302532}
   - component: {fileID: 2628000852499302539}
   - component: {fileID: 2628000852499302538}
-  - component: {fileID: 3541256915094267118}
+  - component: {fileID: 7334744392570013008}
   m_Layer: 8
   m_Name: Sticks
   m_TagString: Untagged
@@ -96,7 +96,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!208 &3541256915094267118
+--- !u!208 &7334744392570013008
 NavMeshObstacle:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -107,7 +107,7 @@ NavMeshObstacle:
   serializedVersion: 3
   m_Shape: 1
   m_Extents: {x: 0.5, y: 0.5, z: 0.5}
-  m_MoveThreshold: 0.05
+  m_MoveThreshold: 0.3
   m_Carve: 1
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: 0}
