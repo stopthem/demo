@@ -51,11 +51,6 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.CompareTag("FinishLine"))
         {
-            if (FinishLine.Instance.howManyPassed == 0)
-            {
-                FinishLine.Instance.howManyPassed++;
-            }
-
             FinishLine.Instance.playerPassed = true;
             Destroy(gameObject);
         }

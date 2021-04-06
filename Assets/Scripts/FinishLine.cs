@@ -8,7 +8,7 @@ public class FinishLine : MonoBehaviour
 
     [HideInInspector] public bool playerPassed;
 
-    [HideInInspector] public float howManyPassed;
+    [HideInInspector] public float howManyFriendsPassed;
 
     private void Awake()
     {
@@ -17,7 +17,7 @@ public class FinishLine : MonoBehaviour
 
     private void Update()
     {
-        if (howManyPassed == GameManager.Instance.rescuedFriends + 1 && playerPassed)
+        if (howManyFriendsPassed == GameManager.Instance.rescuedFriends && playerPassed)
         {
             UIHandler.Instance.ShowWinScreen(true);
         }

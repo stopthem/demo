@@ -12,9 +12,11 @@ public class FriendController : MonoBehaviour
     [SerializeField] private float rangeToDeAggro;
     private float friendToPlayerDistance;
     private float defaultStoppingDistance;
-    private float chaseIteration;
-
+    private float finishLineIteration;
+    
     private Vector3 m_target;
+
+    private List<GameObject> chaseTargets = new List<GameObject>();
 
     private bool m_IsRescued;
     private bool m_imChasingEnemy;
@@ -55,8 +57,9 @@ public class FriendController : MonoBehaviour
                 HandleAttack();
             }
         }
-        else
+        else if (m_IsRescued)
         {
+            m_navMeshAgent.stoppingDistance = 0;
             m_navMeshAgent.isStopped = false;
             m_target = FinishLine.Instance.transform.position;
         }
@@ -70,6 +73,7 @@ public class FriendController : MonoBehaviour
 
     private void HandlePlayerFollow()
     {
+        chaseTargets.Clear();
         if (friendToPlayerDistance < radiusToRescued && !m_IsRescued)
         {
             GameManager.Instance.rescuedFriends++;
@@ -91,14 +95,13 @@ public class FriendController : MonoBehaviour
 
     private void HandleDeAggro()
     {
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-
-        for (int i = 0; i < enemies.Length; i++)
+        for (int i = 0; i < chaseTargets.Count; i++)
         {
-            enemies[0].GetComponent<EnemyController>().friendChasingMe = false;
+            chaseTargets[i].GetComponent<EnemyController>().friendChasingMe = false;
         }
+        chaseTargets.Clear();
 
-        chaseIteration = 0;
+        m_imChasingEnemy = false;
 
         HandlePlayerFollow();
     }
@@ -109,23 +112,31 @@ public class FriendController : MonoBehaviour
 
         if (colliders.Length >= 1)
         {
-            EnemyController enemyController = colliders[0].GetComponent<EnemyController>();
-
-            if (!enemyController.friendChasingMe && chaseIteration == 0 && !m_imChasingEnemy)
+            for (int i = 0; i < colliders.Length; i++)
             {
-                enemyController.friendChasingMe = true;
+                EnemyController enemyController = colliders[i].GetComponent<EnemyController>();
 
-                chaseIteration++;
+                if (!enemyController.friendChasingMe && !m_imChasingEnemy)
+                {
+                    chaseTargets.Add(enemyController.gameObject);
+                    if (chaseTargets.Count > 1)
+                    {
+                        break;
+                    }
 
-                m_navMeshAgent.isStopped = false;
+                    enemyController.friendChasingMe = true;
 
-                m_imChasingEnemy = true;
+                    m_navMeshAgent.isStopped = false;
+
+                    m_imChasingEnemy = true;
+
+                }
             }
 
             if (m_imChasingEnemy)
             {
                 m_navMeshAgent.stoppingDistance = 0;
-                m_target = colliders[0].gameObject.transform.position;
+                m_target = chaseTargets[0].transform.position;
             }
 
         }
@@ -148,8 +159,13 @@ public class FriendController : MonoBehaviour
     {
         if (other.gameObject.CompareTag("FinishLine"))
         {
-            FinishLine.Instance.howManyPassed++;
-            Destroy(gameObject);
+            if (finishLineIteration == 0)
+            {
+                FinishLine.Instance.howManyFriendsPassed++;
+                finishLineIteration++;
+                Destroy(gameObject);
+            }
+
         }
     }
 }
